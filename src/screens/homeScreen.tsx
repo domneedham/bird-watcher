@@ -34,7 +34,8 @@ export const HomeScreen = () => {
   return (
     <BaseView isScrollview className="pb-4">
       <BaseText className="text-3xl mb-4 self-center">
-        WebRTC Test Screen
+        {currentCamera && currentCamera}
+        {!currentCamera && 'WebRTC Test Screen'}
       </BaseText>
 
       <BaseView className="flex-row justify-evenly mb-2">

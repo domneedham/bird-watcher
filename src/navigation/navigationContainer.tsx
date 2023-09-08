@@ -8,7 +8,12 @@ import {
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import colors from 'tailwindcss/colors';
 
-import {CamerasScreen, HomeScreen, OnBoardingScreen} from '@screens';
+import {
+  CamerasScreen,
+  HomeScreen,
+  OnBoardingScreen,
+  BirdseyeScreen,
+} from '@screens';
 
 export type MainStackParamList = {
   Tabs: NavigatorScreenParams<TabsStackParamList>;
@@ -20,6 +25,7 @@ const Stack = createNativeStackNavigator<MainStackParamList>();
 export type TabsStackParamList = {
   Home: undefined;
   Cameras: undefined;
+  Birdseye: undefined;
 };
 
 const TabStack = createBottomTabNavigator<TabsStackParamList>();
@@ -37,6 +43,7 @@ const TabNavigator = () => {
       }}>
       <TabStack.Screen name="Home" component={HomeScreen} />
       <TabStack.Screen name="Cameras" component={CamerasScreen} />
+      <TabStack.Screen name="Birdseye" component={BirdseyeScreen} />
     </TabStack.Navigator>
   );
 };

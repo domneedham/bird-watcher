@@ -111,6 +111,7 @@ export interface CameraConfig {
   mqtt: Mqtt;
   name: string;
   objects: Objects;
+  onvif: Onvif | undefined;
   record: Record;
   rtmp: Rtmp;
   snapshots: Mqtt;
@@ -275,4 +276,20 @@ export interface Color {
 export interface UI {
   dashboard: boolean;
   order: number;
+}
+
+export interface Onvif {
+  host: string;
+  port: number;
+  user: string | undefined;
+  password: string | undefined;
+  autotracking: PtzAutotrack;
+}
+
+export interface PtzAutotrack {
+  enabled: boolean;
+  track: string[];
+  required_zones: string[];
+  return_preset: string;
+  timeout: number;
 }

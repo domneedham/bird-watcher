@@ -12,6 +12,7 @@
 import React from 'react';
 import {
   ActivityIndicator,
+  Button,
   Pressable,
   Text,
   TouchableOpacity,
@@ -27,6 +28,7 @@ import {
 import {PanView} from './PanView';
 import {BaseText, BaseView} from '@components';
 import {API_BASE} from '@env';
+import {useConfig} from '@api';
 
 interface WebRTCViewProps {
   cameraName?: string;
@@ -39,6 +41,8 @@ const webRTCconfig = {
 const MAX_RETRIES = 10;
 
 export const WebRTCView = ({cameraName}: WebRTCViewProps) => {
+  const config = useConfig();
+
   const cameraURL =
     API_BASE.replace('http', 'ws') + '/live/webrtc/api/ws?src=' + cameraName;
 
@@ -251,16 +255,66 @@ export const WebRTCView = ({cameraName}: WebRTCViewProps) => {
 
     // TODO: clean this up and make the zooming and panning a bit cleaner
     return (
-      <PanView isImageZoomed={isImageZoomed}>
-        <Pressable onLongPress={() => setIsImageZoomed(prev => !prev)}>
-          <RTCView
-            style={{height: imageDimension, width: imageDimension}}
-            objectFit={'contain'}
-            streamURL={remoteStream.toURL()}
-          />
-        </Pressable>
-      </PanView>
+      <>
+        <PanView isImageZoomed={isImageZoomed}>
+          <Pressable onLongPress={() => setIsImageZoomed(prev => !prev)}>
+            <RTCView
+              style={{height: imageDimension, width: imageDimension}}
+              objectFit={'contain'}
+              streamURL={remoteStream.toURL()}
+            />
+          </Pressable>
+        </PanView>
+
+        {config.data?.cameras[cameraName]?.onvif?.host && (
+          <>
+            <BaseText>Control Panel</BaseText>
+            <CameraControlPanel cameraName={cameraName} />
+          </>
+        )}
+      </>
     );
   }
   return <Text>No video stream set</Text>;
+};
+
+interface CameraControlPanelProps {
+  cameraName?: string;
+}
+
+const CameraControlPanel = ({cameraName}: CameraControlPanelProps) => {
+  const wsRef = React.useRef<WebSocket>(
+    new WebSocket(`${API_BASE.replace(/^http/, 'ws')}ws`),
+  );
+
+  const onSetMove = (dir: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT') => {
+    wsRef.current.send(
+      JSON.stringify({
+        topic: `${cameraName}/ptz`,
+        payload: `MOVE_${dir}`,
+        retain: false,
+      }),
+    );
+  };
+
+  return (
+    <>
+      <Button
+        title="Up"
+        onPress={e => {
+          e.preventDefault();
+          onSetMove('UP');
+        }}
+      />
+      <Button title="Down" onPress={() => onSetMove('DOWN')} />
+      <Button
+        title="Left"
+        onPress={e => {
+          e.preventDefault();
+          onSetMove('LEFT');
+        }}
+      />
+      <Button title="Right" onPress={() => onSetMove('RIGHT')} />
+    </>
+  );
 };

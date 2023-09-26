@@ -12,10 +12,10 @@
 import React from 'react';
 import {
   ActivityIndicator,
-  Button,
   Pressable,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import {
@@ -297,24 +297,62 @@ const CameraControlPanel = ({cameraName}: CameraControlPanelProps) => {
     );
   };
 
+  const onSetStop = () => {
+    wsRef.current.send(
+      JSON.stringify({
+        topic: `${cameraName}/ptz`,
+        payload: 'STOP',
+        retain: false,
+      }),
+    );
+  };
+
   return (
     <>
-      <Button
-        title="Up"
-        onPress={e => {
+      <TouchableWithoutFeedback
+        onPressIn={e => {
           e.preventDefault();
           onSetMove('UP');
         }}
-      />
-      <Button title="Down" onPress={() => onSetMove('DOWN')} />
-      <Button
-        title="Left"
-        onPress={e => {
+        onPressOut={e => {
+          e.preventDefault();
+          onSetStop();
+        }}>
+        <BaseText>Up</BaseText>
+      </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback
+        onPressIn={e => {
+          e.preventDefault();
+          onSetMove('DOWN');
+        }}
+        onPressOut={e => {
+          e.preventDefault();
+          onSetStop();
+        }}>
+        <BaseText>Down</BaseText>
+      </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback
+        onPressIn={e => {
           e.preventDefault();
           onSetMove('LEFT');
         }}
-      />
-      <Button title="Right" onPress={() => onSetMove('RIGHT')} />
+        onPressOut={e => {
+          e.preventDefault();
+          onSetStop();
+        }}>
+        <BaseText>Left</BaseText>
+      </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback
+        onPressIn={e => {
+          e.preventDefault();
+          onSetMove('RIGHT');
+        }}
+        onPressOut={e => {
+          e.preventDefault();
+          onSetStop();
+        }}>
+        <BaseText>Right</BaseText>
+      </TouchableWithoutFeedback>
     </>
   );
 };
